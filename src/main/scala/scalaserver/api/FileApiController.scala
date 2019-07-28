@@ -7,26 +7,13 @@ import scalaserver.exceptions.RequestProcessingError
 import scalaserver.utility.FileUtilities
 
 /**
- * Main Api controller to handle incoming API requests.
+ * Api controller to handle incoming /file API requests.
  *
- * @param fileUtils
  */
 @Controller
-@RequestMapping(path = Array("/api"))
-class ApiController(@Autowired fileUtils : FileUtilities) {
-
+@RequestMapping(path = Array("/file"))
+class FileApiController(@Autowired fileUtils : FileUtilities) {
   private var fileUtilities : FileUtilities = fileUtils;
-
-  /**
-   * Function to handle /time API
-   * @return Long value of current time in milliseconds
-   */
-  @GetMapping(path = Array("/time"))
-  @ResponseBody
-  def  getEpochTime: Long = {
-     System.currentTimeMillis();
-  }
-
   /**
    * Method to handle /bytesOfFile api, which returns bytes from file stored locally
    * @param length length of string to retrieve from the file
@@ -35,10 +22,10 @@ class ApiController(@Autowired fileUtils : FileUtilities) {
    * @return String value retrieved from file.
    */
   @throws(classOf[RequestProcessingError])
-  @GetMapping(path = Array("/bytesOfFile"))
+  @GetMapping(path = Array("/bytes"))
   @ResponseBody
   def getBytesOfFile(@RequestParam(name = "length") length:Int,
-                    @Value("${path.to.file}") file : String) : String ={
+                     @Value("${path.to.file}") file : String) : String ={
     return fileUtilities.readFile(file, length);
   }
 
@@ -49,9 +36,10 @@ class ApiController(@Autowired fileUtils : FileUtilities) {
    * @return String content of a file located with given path
    */
   @throws(classOf[RequestProcessingError])
-  @GetMapping(path = Array("/readFile"))
+  @GetMapping(path = Array("/content"))
   @ResponseBody
   def readFile(@RequestParam(name = "path") path:String) : String ={
     return fileUtilities.readFile(path);
   }
+
 }

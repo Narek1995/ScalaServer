@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, status}
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import scalaserver.api.ApiController
+import scalaserver.api.{FileApiController, UtilityApiController}
 import scalaserver.exceptions.{CustomExceptionHandler, RequestProcessingError}
 import scalaserver.utility.FileUtilities
 
@@ -22,10 +22,11 @@ import scalaserver.utility.FileUtilities
  * Test Api-s from ApiController
  */
 @RunWith(classOf[SpringRunner])
-@SpringBootTest(classes= Array(classOf[ApiController], classOf[CustomExceptionHandler]),webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes= Array(classOf[FileApiControllerTest],
+  classOf[CustomExceptionHandler]),webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @EnableAutoConfiguration
-class ApiControllerTest {
+class FileApiControllerTest {
   private var mockMvc:MockMvc  = null
   @MockBean
   private val fileUtilities: FileUtilities = null;
@@ -37,7 +38,7 @@ class ApiControllerTest {
    */
   @Before
   def setup{
-    this.mockMvc = MockMvcBuilders.standaloneSetup(new ApiController(fileUtilities)).
+    this.mockMvc = MockMvcBuilders.standaloneSetup(new FileApiController(fileUtilities)).
       setControllerAdvice(new CustomExceptionHandler()).build()
       requestProcessingError = new RequestProcessingError("Custom Error Text", HttpStatus.BAD_REQUEST);
   }
@@ -49,7 +50,7 @@ class ApiControllerTest {
   @Test
   def readFileTest{
     doReturn(testString).when(fileUtilities).readFile(Matchers.anyString(), Matchers.anyInt());
-    mockMvc.perform(get("/api/bytesOfFile?length=10")).andExpect(status.isOk).andExpect(
+    mockMvc.perform(get("/file/bytes?length=10")).andExpect(status.isOk).andExpect(
     content.string(testString));
   }
 
@@ -60,7 +61,7 @@ class ApiControllerTest {
   @Test
   def readFileExceptionTest: Unit ={
     doThrow(requestProcessingError).when(fileUtilities).readFile(Matchers.anyString(), Matchers.anyInt());
-    mockMvc.perform(get("/api/bytesOfFile?length=10")).andExpect(status.is(requestProcessingError.status.value())).andExpect(
+    mockMvc.perform(get("/file/bytes?length=10")).andExpect(status.is(requestProcessingError.status.value())).andExpect(
       content.string(requestProcessingError.message));
   }
 
@@ -71,7 +72,7 @@ class ApiControllerTest {
   @Test
   def readFullFileTest{
     doReturn(testString).when(fileUtilities).readFile(Matchers.anyString());
-    mockMvc.perform(get("/api/readFile?path=testPath")).andExpect(status.isOk).andExpect(content.string(testString));
+    mockMvc.perform(get("/file/content?path=testPath")).andExpect(status.isOk).andExpect(content.string(testString));
   }
 
   /**
@@ -81,7 +82,7 @@ class ApiControllerTest {
   @Test
   def readFullFileExceptionTest{
     doThrow(requestProcessingError).when(fileUtilities).readFile(Matchers.anyString());
-    mockMvc.perform(get("/api/readFile?path=testPath")).andExpect(status.is(requestProcessingError.status.value())).andExpect(
+    mockMvc.perform(get("/file/content?path=testPath")).andExpect(status.is(requestProcessingError.status.value())).andExpect(
       content.string(requestProcessingError.message));
   }
 }
