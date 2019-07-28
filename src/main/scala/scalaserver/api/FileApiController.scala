@@ -17,7 +17,8 @@ class FileApiController(@Autowired fileUtils : FileUtilities) {
   /**
    * Method to handle /bytesOfFile api, which returns bytes from file stored locally
    * @param length length of string to retrieve from the file
-   * @param file path to the file stored locally, value is retried from application.properties file
+   * @param file path to the file stored locally, value is retried from application.properties file: Before byild
+   *             setup path value at application.properties
    * @throws scalaserver.exceptions.RequestProcessingError
    * @return String value retrieved from file.
    */
