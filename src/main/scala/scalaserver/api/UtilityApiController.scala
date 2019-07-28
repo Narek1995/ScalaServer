@@ -1,10 +1,9 @@
 package scalaserver.api
 
-import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RequestParam, ResponseBody}
-import scalaserver.exceptions.RequestProcessingError
-import scalaserver.utility.FileUtilities
+import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, ResponseBody}
+import scalaserver.utility.Utilities
 
 /**
  * Api controller to handle incoming /utility API requests.
@@ -12,8 +11,8 @@ import scalaserver.utility.FileUtilities
  */
 @Controller
 @RequestMapping(path = Array("/utility"))
-class UtilityApiController() {
-
+class UtilityApiController(@Autowired utils:Utilities) {
+    private val utilities : Utilities = utils;
 
 
   /**
@@ -23,7 +22,7 @@ class UtilityApiController() {
   @GetMapping(path = Array("/time"))
   @ResponseBody
   def  getEpochTime: Long = {
-     System.currentTimeMillis();
+     utils.getCurrentTimeInMilliseconds;
   }
 
 

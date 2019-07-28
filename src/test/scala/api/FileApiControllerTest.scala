@@ -1,7 +1,7 @@
 package api
 
-import org.junit.{Before, Test}
 import org.junit.runner.RunWith
+import org.junit.{Before, Test}
 import org.mockito.Matchers
 import org.mockito.Mockito.{doReturn, doThrow}
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -14,12 +14,12 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, status}
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import scalaserver.api.{FileApiController, UtilityApiController}
+import scalaserver.api.FileApiController
 import scalaserver.exceptions.{CustomExceptionHandler, RequestProcessingError}
 import scalaserver.utility.FileUtilities
 
 /**
- * Test Api-s from ApiController
+ * Test Api-s from FileApiController
  */
 @RunWith(classOf[SpringRunner])
 @SpringBootTest(classes= Array(classOf[FileApiControllerTest],
