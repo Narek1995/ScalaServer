@@ -1,28 +1,44 @@
 package scalaserver.utility
-import java.io.FileInputStream
+import java.io.{FileInputStream, FileNotFoundException}
+
+import org.springframework.context.annotation.Configuration
+import scalaserver.exceptions.{RequestProcessingError, ResponseText}
+
 import scala.io.BufferedSource
 
- object  FileUtilities {
-   private def getSourceFromFile(path : String) : BufferedSource = {
-     val inputStream = new FileInputStream(path);
-     return scala.io.Source.fromInputStream(inputStream);
+@Configuration
+ class  FileUtilities {
+  @throws(classOf[RequestProcessingError])
+  def getSourceFromFile(path : String) : BufferedSource = {
+    try {
+      val inputStream = new FileInputStream(path);
+      return scala.io.Source.fromInputStream(inputStream);
+    }catch {
+      case e : FileNotFoundException =>
+      throw new RequestProcessingError(ResponseText.FILE_NOT_FOUND_ERROR_TEXT);
+    }
    }
 
+  @throws(classOf[RequestProcessingError])
   def readFile(path : String, length : Int): String = {
     val bufferedSource = getSourceFromFile(path);
     val characters = bufferedSource.take(length);
-    var result:Array[Char] =  new Array[Char](length);
-    characters.copyToArray(result);
-    return new String(result).trim();
+    var result : StringBuilder = new StringBuilder();
+    while (characters.hasNext){
+      result.append(characters.next());
+    }
+    return result.toString();
   }
 
+  @throws(classOf[RequestProcessingError])
    def readFile(path : String): String ={
      val bufferedSource = getSourceFromFile(path);
-     val lines = bufferedSource.getLines();
      var result : StringBuilder = new StringBuilder();
-     while (lines.hasNext){
-       result.append(lines.next());
-       result.append("\n");
+     var reader = bufferedSource.reader();
+     var character = reader.read();
+     while (character != -1){
+       result.append(character.toChar);
+       character = reader.read();
      }
      return result.toString();
    }
